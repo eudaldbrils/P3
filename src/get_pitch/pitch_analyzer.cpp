@@ -12,10 +12,10 @@ namespace upc {
     for (unsigned int l = 0; l < r.size(); ++l) {
   		/// \TODO Compute the autocorrelation r[l]
       /**
-      \DONE AUTOCORRELATION COMPUTED
-      - AUTOCORRELATION SET TO 0
-      - AUTOCORRELATION ACUMULATED FOR ALL THE SIGNAL
-      - AUTOCORRELATION DIVIDED BY LENGTH
+      \DONE autocorrelation computed
+      - autocorrelation set to 0
+      - autocorrelation acumulated for all the signal
+      - autocorrelation divided by length
       */
       r[l] = 0;
       for(unsigned int n = l; n < x.size(); n++){
@@ -61,7 +61,10 @@ namespace upc {
     /// \TODO Implement a rule to decide whether the sound is voiced or not.
     /// * You can use the standard features (pot, r1norm, rmaxnorm),
     ///   or compute and use other ones.
-    return false;
+    if(rmaxnorm>umaxnorm){
+      return false;
+    }
+    return true;
   }
 
   float PitchAnalyzer::compute_pitch(vector<float> & x) const {
