@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string.h>
 #include <errno.h>
+//#include <matplotlib.h>
 
 #include "wavfile_mono.h"
 #include "pitch_analyzer.h"
@@ -15,6 +16,8 @@
 
 using namespace std;
 using namespace upc;
+//namespace plt = matplotlibcpp;
+
 
 static const char USAGE[] = R"(
 get_pitch - Pitch Estimator 
@@ -63,9 +66,35 @@ int main(int argc, const char *argv[]) {
   // Define analyzer
   PitchAnalyzer analyzer(n_len, rate,umaxnorm, PitchAnalyzer::HAMMING, 50, 500);
 
+  ///Normalitzar el senyal
+  float max=0;
+  for(unsigned int k=0; k<x.size();k++){
+    if(abs(x[k])>max){
+      max=x[k];
+    }
+  }
+  for(unsigned int k=0; k<x.size();k++){
+    x[k]=x[k]/max;
+  }
+
   /// \TODO
   /// Preprocess the input signal in order to ease pitch estimation. For instance,
   /// central-clipping or low pass filtering may be used.
+  float llindarPos=0.01;//BUSCAR VALOR OPTIM
+  float llindarNeg=-0.01;//BUSCAR VALOR OPTIM
+  for(unsigned int k=0; k<x.size();k++){
+    if(x[k]>0){
+      x[k]=x[k]-llindarPos;
+      if(x[k]<0){
+        x[k]=0;
+      }
+    } else {
+      x[k]=x[k]-llindarNeg;
+      if(x[k]>0){
+        x[k]=0;
+      }
+    }
+  }
   
   // Iterate for each frame and save values in f0 vector
   vector<float>::iterator iX;
@@ -78,6 +107,15 @@ int main(int argc, const char *argv[]) {
   /// \TODO
   /// Postprocess the estimation in order to supress errors. For instance, a median filter
   /// or time-warping may be used.
+  vector<float> fMediana;
+  int fMedianaLen=3;
+  for (unsigned int l=0; l<f0.size()-(fMedianaLen-1); l++){
+    for(int r=0; r<fMedianaLen; r++){
+      fMediana[r]=f0[l+r];
+    }
+    sort(fMediana.begin(),fMediana.end());
+    f0[l]=fMediana[fMediana.size()/2];
+  }
 
   // Write f0 contour into the output file
   ofstream os(output_txt);
@@ -90,6 +128,26 @@ int main(int argc, const char *argv[]) {
   for (iX = f0.begin(); iX != f0.end(); ++iX) 
     os << *iX << '\n';
   os << 0 << '\n';//pitch at t=Dur
+
+  /*int n = 500;
+	std::vector<double> x(n), y(n), z(n);
+	for(int i=0; i<n; ++i) {
+		x.at(i) = i;
+		y.at(i) = sin(2*M_PI*i/360.0);
+		z.at(i) = 100.0 / i;
+	}
+
+  plt::suptitle("My plot");
+    plt::subplot(1, 2, 1);
+	plt::plot(x, y, "r-");
+    plt::subplot(1, 2, 2);
+    plt::plot(x, z, "k-");
+    // Add some text to the plot
+    plt::text(100, 90, "Hello!");
+
+
+	// Show plots
+	plt::show();*/
 
   return 0;
 }
