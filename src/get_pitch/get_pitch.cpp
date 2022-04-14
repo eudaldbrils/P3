@@ -80,6 +80,11 @@ int main(int argc, const char *argv[]) {
   /// \TODO
   /// Preprocess the input signal in order to ease pitch estimation. For instance,
   /// central-clipping or low pass filtering may be used.
+  /**
+  \DONE central-clipping applied
+      - 2 thersholds defined
+      - samples between these two thersholds setted to 0
+      */
   float llindarPos=0.01;//BUSCAR VALOR OPTIM
   float llindarNeg=-0.01;//BUSCAR VALOR OPTIM
   for(unsigned int k=0; k<x.size();k++){
@@ -98,7 +103,7 @@ int main(int argc, const char *argv[]) {
   
   // Iterate for each frame and save values in f0 vector
   vector<float>::iterator iX;
-  vector<float> f0;
+  vector<float> f0;//vector de pitchs
   for (iX = x.begin(); iX + n_len < x.end(); iX = iX + n_shift) {
     float f = analyzer(iX, iX + n_len);
     f0.push_back(f);
@@ -107,15 +112,24 @@ int main(int argc, const char *argv[]) {
   /// \TODO
   /// Postprocess the estimation in order to supress errors. For instance, a median filter
   /// or time-warping may be used.
+  /**
+  \DONE Median filter applied
+      - Median filter of size 3
+      - Not much effective at the moment
+            */
   vector<float> fMediana;
+  vector<float> f0_;
   int fMedianaLen=3;
-  for (unsigned int l=0; l<f0.size()-(fMedianaLen-1); l++){
-    for(int r=0; r<fMedianaLen; r++){
-      fMediana[r]=f0[l+r];
+  for (unsigned int l=0; l<f0.size()-2; l++){
+    for(int r=0; r<3; r++){
+      fMediana.push_back(f0[l+r]);
     }
     sort(fMediana.begin(),fMediana.end());
-    f0[l]=fMediana[fMediana.size()/2];
+    f0_.push_back(fMediana[1]);//generalitzar l'1
+    fMediana.clear();
   }
+  f0_.push_back(f0[f0.size()-2]);
+  f0_.push_back(f0[f0.size()-1]);
 
   // Write f0 contour into the output file
   ofstream os(output_txt);
@@ -125,7 +139,7 @@ int main(int argc, const char *argv[]) {
   }
 
   os << 0 << '\n'; //pitch at t=0
-  for (iX = f0.begin(); iX != f0.end(); ++iX) 
+  for (iX = f0_.begin(); iX != f0_.end(); ++iX) //anteriorment era f0
     os << *iX << '\n';
   os << 0 << '\n';//pitch at t=Dur
 
