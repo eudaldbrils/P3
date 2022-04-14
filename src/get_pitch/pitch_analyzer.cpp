@@ -3,6 +3,7 @@
 #include <iostream>
 #include <math.h>
 #include "pitch_analyzer.h"
+#include <fstream>
 
 using namespace std;
 
@@ -37,7 +38,7 @@ namespace upc {
     switch (win_type) {
     case HAMMING:
       /// \TODO Implement the Hamming window
-      for (int n=0; n<frameLen; n++){
+      for (unsigned int n=0; n<frameLen; n++){
         window[n] = 0.53836 - (0.46164*(cos((2*3.1416*n)/(frameLen-1))));
       }
             window.assign(frameLen, 1);//ELIMINAR MAS TARDE 
@@ -64,7 +65,7 @@ namespace upc {
     /// \TODO Implement a rule to decide whether the sound is voiced or not.
     /// * You can use the standard features (pot, r1norm, rmaxnorm),
     ///   or compute and use other ones.
-    if(rmaxnorm>umaxnorm){
+    if((rmaxnorm>umaxnorm && r1norm>0.8) || pot>10){
       return false;
     }
     return true;
@@ -110,9 +111,19 @@ namespace upc {
       cout << pot << '\t' << r[1]/r[0] << '\t' << r[lag]/r[0] << endl;
 #endif
     
-    if (unvoiced(pot, r[1]/r[0], r[lag]/r[0]))
+    if (unvoiced(pot, r[1]/r[0], r[lag]/r[0])){
       return 0;
-    else
-      return (float) samplingFreq/(float) lag;
+    }
+    else{
+      /*FILE *foutput_x = fopen("resultats_x.txt", "w+");
+      FILE *foutput_r = fopen("resultats_r.txt", "w+");
+      for(unsigned int i =0; i<x.size(); i++){
+        fprintf(foutput_x, "%f",x[i]);
+        fprintf(foutput_r, "%f",r[i]);      
+      }
+      fclose(foutput_x);
+      fclose(foutput_r);
+      */return (float) samplingFreq/(float) lag;
+    }
   }
 }

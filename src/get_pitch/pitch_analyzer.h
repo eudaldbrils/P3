@@ -2,7 +2,8 @@
 
 #ifndef PITCH_ANALYZER_H
 #define PITCH_ANALYZER_H
-
+#include <iostream>
+#include <fstream>
 #include <vector>
 #include <algorithm>
 
@@ -30,7 +31,8 @@ namespace upc {
       samplingFreq, ///< sampling rate (in samples per second). Has to be set in the constructor call
       npitch_min, ///< minimum value of pitch period, in samples
       npitch_max; ///< maximum value of pitch period, in samples
-      float umaxnorm;
+    float umaxnorm;
+    
 	///
 	/// Computes correlation from lag=0 to r.size()
 	///
@@ -54,7 +56,7 @@ namespace upc {
 					Window w=PitchAnalyzer::HAMMING,	///< Window type
 					float min_F0 = MIN_F0,		///< Pitch range should be restricted to be above this value
 					float max_F0 = MAX_F0	///< Pitch range should be restricted to be below this value
-				 )
+         )
 	{
       frameLen = fLen;
       samplingFreq = sFreq;

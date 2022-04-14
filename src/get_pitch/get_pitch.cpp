@@ -28,7 +28,9 @@ Usage:
     get_pitch --version
 
 Options:
-    -m FLOAT, --umaxnorm=FLOAT  umbral de la autocorrelación a largo plazo [default: 0.5]
+    -m FLOAT, --umaxnorm=FLOAT  umbral de la autocorrelación a largo plazo [default: 0.4]
+    -r FLOAT, --llindarPos=FLOAT  umbral clipping positiu [default: 0.01]
+    -b FLOAT, --llindarNeg=FLOAT umbral clipping negatiu [default: -0,01]
     -h, --help  Show this screen
     --version   Show the version of the project
 
@@ -51,6 +53,11 @@ int main(int argc, const char *argv[]) {
 	std::string input_wav = args["<input-wav>"].asString();
 	std::string output_txt = args["<output-txt>"].asString();
   float umaxnorm=stof(args["--umaxnorm"].asString());
+  float llindarPos = stof(args["--llindarPos"].asString());
+  float llindarNeg = stof(args["--llindarNeg"].asString());
+  
+
+  //float alpha3 = stof(args["--alpha3"].asString());
 
   // Read input sound file
   unsigned int rate;
@@ -64,8 +71,7 @@ int main(int argc, const char *argv[]) {
   int n_shift = rate * FRAME_SHIFT;
 
   // Define analyzer
-  PitchAnalyzer analyzer(n_len, rate,umaxnorm, PitchAnalyzer::HAMMING, 50, 500);
-
+  PitchAnalyzer analyzer(n_len, rate,umaxnorm, PitchAnalyzer::HAMMING, 50, 500);  
   ///Normalitzar el senyal
   float max=0;
   for(unsigned int k=0; k<x.size();k++){
@@ -85,8 +91,7 @@ int main(int argc, const char *argv[]) {
       - 2 thersholds defined
       - samples between these two thersholds setted to 0
       */
-  float llindarPos=0.01;//BUSCAR VALOR OPTIM
-  float llindarNeg=-0.01;//BUSCAR VALOR OPTIM
+  
   for(unsigned int k=0; k<x.size();k++){
     if(x[k]>0){
       x[k]=x[k]-llindarPos;
@@ -120,15 +125,17 @@ int main(int argc, const char *argv[]) {
   vector<float> fMediana;
   vector<float> f0_;
   int fMedianaLen=3;
-  for (unsigned int l=0; l<f0.size()-2; l++){
-    for(int r=0; r<3; r++){
+  f0_.push_back(f0[0]);
+  for (unsigned int l=1; l<f0.size()-1; l++){
+    
+    for(int r=-1; r<2; r++){
       fMediana.push_back(f0[l+r]);
     }
     sort(fMediana.begin(),fMediana.end());
     f0_.push_back(fMediana[1]);//generalitzar l'1
     fMediana.clear();
   }
-  f0_.push_back(f0[f0.size()-2]);
+  
   f0_.push_back(f0[f0.size()-1]);
 
   // Write f0 contour into the output file
@@ -143,25 +150,7 @@ int main(int argc, const char *argv[]) {
     os << *iX << '\n';
   os << 0 << '\n';//pitch at t=Dur
 
-  /*int n = 500;
-	std::vector<double> x(n), y(n), z(n);
-	for(int i=0; i<n; ++i) {
-		x.at(i) = i;
-		y.at(i) = sin(2*M_PI*i/360.0);
-		z.at(i) = 100.0 / i;
-	}
 
-  plt::suptitle("My plot");
-    plt::subplot(1, 2, 1);
-	plt::plot(x, y, "r-");
-    plt::subplot(1, 2, 2);
-    plt::plot(x, z, "k-");
-    // Add some text to the plot
-    plt::text(100, 90, "Hello!");
-
-
-	// Show plots
-	plt::show();*/
 
   return 0;
 }
