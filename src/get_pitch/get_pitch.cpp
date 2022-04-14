@@ -108,13 +108,47 @@ int main(int argc, const char *argv[]) {
   /// Postprocess the estimation in order to supress errors. For instance, a median filter
   /// or time-warping may be used.
   vector<float> fMediana;
-  int fMedianaLen=3;
-  for (unsigned int l=0; l<f0.size()-(fMedianaLen-1); l++){
+  unsigned int fMedianaLen=3;
+  /*for (unsigned int l=0; l<f0.size()-(fMedianaLen-1); l++){
     for(int r=0; r<fMedianaLen; r++){
       fMediana[r]=f0[l+r];
     }
     sort(fMediana.begin(),fMediana.end());
     f0[l]=fMediana[fMediana.size()/2];
+  }*/
+  /*for(unsigned int l = 0; l<f0.size();l++){
+    if(l<(f0.size()-fMedianaLen)){
+      for(unsigned int r = 0; r<fMedianaLen; r++){
+        fMediana[r]  = f0[l+r];
+      }
+    }
+    else{
+      fMediana[1] = f0[l];
+    }
+    sort(fMediana.begin(), fMediana.end());
+    f0[l] = fMediana[1];
+
+  }*/
+  unsigned int l = 0;
+  while(l<f0.size()){
+    if(l<=(f0.size()-fMedianaLen)){
+      for(unsigned int r= 0; r<fMedianaLen; r++){
+          fMediana[r] = f0[l+r];
+      }
+    }
+    else{
+      for(unsigned int r = 0; r<fMedianaLen; r++){
+        fMediana[r] = f0[l];
+      }
+    }
+    sort(fMediana.begin(), fMediana.end());
+    f0[l] = fMediana[1];
+    l++;
+
+
+
+
+
   }
 
   // Write f0 contour into the output file
