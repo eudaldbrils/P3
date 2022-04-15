@@ -115,15 +115,16 @@ namespace upc {
       return 0;
     }
     else{
-      /*FILE *foutput_x = fopen("resultats_x.txt", "w+");
+      FILE *foutput_x = fopen("resultats_x.txt", "w+");
       FILE *foutput_r = fopen("resultats_r.txt", "w+");
       for(unsigned int i =0; i<x.size(); i++){
-        fprintf(foutput_x, "%f",x[i]);
-        fprintf(foutput_r, "%f",r[i]);      
+        fprintf(foutput_x, "%f \n",x[i]);
+        fprintf(foutput_r, "%f \n",r[i]);      
       }
       fclose(foutput_x);
       fclose(foutput_r);
-      */return (float) samplingFreq/(float) lag;
+      
+      return (float) samplingFreq/(float) lag;
     }
   }
 }
