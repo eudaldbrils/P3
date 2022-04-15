@@ -41,7 +41,6 @@ namespace upc {
       for (unsigned int n=0; n<frameLen; n++){
         window[n] = 0.53836 - (0.46164*(cos((2*3.1416*n)/(frameLen-1))));
       }
-            window.assign(frameLen, 1);//ELIMINAR MAS TARDE 
       break;
     case RECT:
     default:
