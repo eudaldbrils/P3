@@ -53,6 +53,7 @@ int main(int argc, const char *argv[]) {
   float umaxnorm=stof(args["--umaxnorm"].asString());
   float llindarPos=stof(args["--llindarPos"].asString());
   float llindarNeg=stof(args["--llindarNeg"].asString());
+
   // Read input sound file
   unsigned int rate;
   vector<float> x;
@@ -106,7 +107,6 @@ int main(int argc, const char *argv[]) {
   /// \TODO
   /// Postprocess the estimation in order to supress errors. For instance, a median filter
   /// or time-warping may be used.
-  
   vector<float> fMediana;
   vector<float> f0_;
   int fMedianaLen=3;
