@@ -130,7 +130,7 @@ int main(int argc, const char *argv[]) {
   }
 
   os << 0 << '\n'; //pitch at t=0
-  for (iX = f0_.begin(); iX != f0_.end(); ++iX) 
+  for (iX = f0.begin(); iX != f0.end(); ++iX) 
     os << *iX << '\n';
   os << 0 << '\n';//pitch at t=Dur
 
