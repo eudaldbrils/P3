@@ -16,8 +16,6 @@
 
 using namespace std;
 using namespace upc;
-//namespace plt = matplotlibcpp;
-
 
 static const char USAGE[] = R"(
 get_pitch - Pitch Estimator 
@@ -29,9 +27,8 @@ Usage:
 
 Options:
     -m FLOAT, --umaxnorm=FLOAT  umbral de la autocorrelación a largo plazo [default: 0.5]
-    -l FLOAT, --llindarPos=FLOAT umbral positiu [default: 0.01]
-    -r FLOAT, --llindarNeg=FLOAT umbral negatiu [default:-0.01]
-
+    -p FLOAT, --llindarPos=FLOAT  umbral positivo central clipping [default: 0.01]
+    -n FLOAT, --llindarNeg=FLOAT  umbral negativo central clipping [default: -0.01]
     -h, --help  Show this screen
     --version   Show the version of the project
 
@@ -84,7 +81,6 @@ int main(int argc, const char *argv[]) {
   /// \TODO
   /// Preprocess the input signal in order to ease pitch estimation. For instance,
   /// central-clipping or low pass filtering may be used.
-
   for(unsigned int k=0; k<x.size();k++){
     if(x[k]>0){
       x[k]=x[k]-llindarPos;
@@ -125,27 +121,6 @@ int main(int argc, const char *argv[]) {
     fMediana.clear();
   }
    f0_.push_back(f0[f0.size()-1]);
-  /*unsigned int l = 0;
-  while(l<f0.size()){
-    if(l<=(f0.size()-fMedianaLen)){
-      for(unsigned int r= 0; r<fMedianaLen; r++){
-          fMediana[r] = f0[l+r];
-      }
-    }
-    else{
-      for(unsigned int r = 0; r<fMedianaLen; r++){
-        fMediana[r] = f0[l];
-      }
-    }
-    sort(fMediana.begin(), fMediana.end());
-    f0[l] = fMediana[1];
-    l++;
-
-
-
-
-
-  }*/
 
   // Write f0 contour into the output file
   ofstream os(output_txt);
