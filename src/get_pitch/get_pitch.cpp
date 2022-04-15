@@ -28,9 +28,7 @@ Usage:
     get_pitch --version
 
 Options:
-    -m FLOAT, --umaxnorm=FLOAT  umbral de la autocorrelación a largo plazo [default: 0.4]
-    -r FLOAT, --llindarPos=FLOAT  umbral clipping positiu [default: 0.01]
-    -b FLOAT, --llindarNeg=FLOAT umbral clipping negatiu [default: -0,01]
+    -m FLOAT, --umaxnorm=FLOAT  umbral de la autocorrelación a largo plazo [default: 0.5]
     -h, --help  Show this screen
     --version   Show the version of the project
 
@@ -53,11 +51,6 @@ int main(int argc, const char *argv[]) {
 	std::string input_wav = args["<input-wav>"].asString();
 	std::string output_txt = args["<output-txt>"].asString();
   float umaxnorm=stof(args["--umaxnorm"].asString());
-  float llindarPos = stof(args["--llindarPos"].asString());
-  float llindarNeg = stof(args["--llindarNeg"].asString());
-  
-
-  //float alpha3 = stof(args["--alpha3"].asString());
 
   // Read input sound file
   unsigned int rate;
@@ -71,7 +64,8 @@ int main(int argc, const char *argv[]) {
   int n_shift = rate * FRAME_SHIFT;
 
   // Define analyzer
-  PitchAnalyzer analyzer(n_len, rate,umaxnorm, PitchAnalyzer::HAMMING, 50, 500);  
+  PitchAnalyzer analyzer(n_len, rate,umaxnorm, PitchAnalyzer::HAMMING, 50, 500);
+
   ///Normalitzar el senyal
   float max=0;
   for(unsigned int k=0; k<x.size();k++){
@@ -86,12 +80,8 @@ int main(int argc, const char *argv[]) {
   /// \TODO
   /// Preprocess the input signal in order to ease pitch estimation. For instance,
   /// central-clipping or low pass filtering may be used.
-  /**
-  \DONE central-clipping applied
-      - 2 thersholds defined
-      - samples between these two thersholds setted to 0
-      */
-  
+  float llindarPos=0.01;//BUSCAR VALOR OPTIM
+  float llindarNeg=-0.01;//BUSCAR VALOR OPTIM
   for(unsigned int k=0; k<x.size();k++){
     if(x[k]>0){
       x[k]=x[k]-llindarPos;
@@ -108,7 +98,7 @@ int main(int argc, const char *argv[]) {
   
   // Iterate for each frame and save values in f0 vector
   vector<float>::iterator iX;
-  vector<float> f0;//vector de pitchs
+  vector<float> f0;
   for (iX = x.begin(); iX + n_len < x.end(); iX = iX + n_shift) {
     float f = analyzer(iX, iX + n_len);
     f0.push_back(f);
@@ -117,26 +107,49 @@ int main(int argc, const char *argv[]) {
   /// \TODO
   /// Postprocess the estimation in order to supress errors. For instance, a median filter
   /// or time-warping may be used.
-  /**
-  \DONE Median filter applied
-      - Median filter of size 3
-      - Not much effective at the moment
-            */
   vector<float> fMediana;
-  vector<float> f0_;
-  int fMedianaLen=3;
-  f0_.push_back(f0[0]);
-  for (unsigned int l=1; l<f0.size()-1; l++){
-    
-    for(int r=-1; r<2; r++){
-      fMediana.push_back(f0[l+r]);
+  unsigned int fMedianaLen=3;
+  /*for (unsigned int l=0; l<f0.size()-(fMedianaLen-1); l++){
+    for(int r=0; r<fMedianaLen; r++){
+      fMediana[r]=f0[l+r];
     }
     sort(fMediana.begin(),fMediana.end());
-    f0_.push_back(fMediana[1]);//generalitzar l'1
-    fMediana.clear();
-  }
-  
-  f0_.push_back(f0[f0.size()-1]);
+    f0[l]=fMediana[fMediana.size()/2];
+  }*/
+    for(unsigned int l = 0; l<f0.size();l++){
+      if(l<(f0.size()-fMedianaLen)){
+        for(unsigned int r = 0; r<fMedianaLen; r++){
+          fMediana[r]  = f0[l+r];
+        }
+      }
+      else{
+        fMediana[1] = f0[l];
+      }
+      sort(fMediana.begin(), fMediana.end());
+      f0[l] = fMediana[1];
+
+    }
+  /*unsigned int l = 0;
+  while(l<f0.size()){
+    if(l<=(f0.size()-fMedianaLen)){
+      for(unsigned int r= 0; r<fMedianaLen; r++){
+          fMediana[r] = f0[l+r];
+      }
+    }
+    else{
+      for(unsigned int r = 0; r<fMedianaLen; r++){
+        fMediana[r] = f0[l];
+      }
+    }
+    sort(fMediana.begin(), fMediana.end());
+    f0[l] = fMediana[1];
+    l++;
+
+
+
+
+
+  }*/
 
   // Write f0 contour into the output file
   ofstream os(output_txt);
@@ -146,11 +159,29 @@ int main(int argc, const char *argv[]) {
   }
 
   os << 0 << '\n'; //pitch at t=0
-  for (iX = f0_.begin(); iX != f0_.end(); ++iX) //anteriorment era f0
+  for (iX = f0.begin(); iX != f0.end(); ++iX) 
     os << *iX << '\n';
   os << 0 << '\n';//pitch at t=Dur
 
+  /*int n = 500;
+	std::vector<double> x(n), y(n), z(n);
+	for(int i=0; i<n; ++i) {
+		x.at(i) = i;
+		y.at(i) = sin(2*M_PI*i/360.0);
+		z.at(i) = 100.0 / i;
+	}
 
+  plt::suptitle("My plot");
+    plt::subplot(1, 2, 1);
+	plt::plot(x, y, "r-");
+    plt::subplot(1, 2, 2);
+    plt::plot(x, z, "k-");
+    // Add some text to the plot
+    plt::text(100, 90, "Hello!");
+
+
+	// Show plots
+	plt::show();*/
 
   return 0;
 }
