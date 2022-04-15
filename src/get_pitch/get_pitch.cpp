@@ -29,6 +29,9 @@ Usage:
 
 Options:
     -m FLOAT, --umaxnorm=FLOAT  umbral de la autocorrelación a largo plazo [default: 0.5]
+    -l FLOAT, --llindarPos=FLOAT umbral positiu [default: 0.01]
+    -r FLOAT, --llindarNeg=FLOAT umbral negatiu [default:-0.01]
+
     -h, --help  Show this screen
     --version   Show the version of the project
 
@@ -51,7 +54,8 @@ int main(int argc, const char *argv[]) {
 	std::string input_wav = args["<input-wav>"].asString();
 	std::string output_txt = args["<output-txt>"].asString();
   float umaxnorm=stof(args["--umaxnorm"].asString());
-
+  float llindarPos=stof(args["--llindarPos"].asString());
+  float llindarNeg=stof(args["--llindarNeg"].asString());
   // Read input sound file
   unsigned int rate;
   vector<float> x;
@@ -80,8 +84,7 @@ int main(int argc, const char *argv[]) {
   /// \TODO
   /// Preprocess the input signal in order to ease pitch estimation. For instance,
   /// central-clipping or low pass filtering may be used.
-  float llindarPos=0.01;//BUSCAR VALOR OPTIM
-  float llindarNeg=-0.01;//BUSCAR VALOR OPTIM
+
   for(unsigned int k=0; k<x.size();k++){
     if(x[k]>0){
       x[k]=x[k]-llindarPos;
@@ -107,28 +110,21 @@ int main(int argc, const char *argv[]) {
   /// \TODO
   /// Postprocess the estimation in order to supress errors. For instance, a median filter
   /// or time-warping may be used.
+  
   vector<float> fMediana;
-  unsigned int fMedianaLen=3;
-  /*for (unsigned int l=0; l<f0.size()-(fMedianaLen-1); l++){
-    for(int r=0; r<fMedianaLen; r++){
-      fMediana[r]=f0[l+r];
+  vector<float> f0_;
+  int fMedianaLen=3;
+  f0_.push_back(f0[0]);
+  for (unsigned int l=1; l<f0.size()-1; l++){
+
+    for(int r=-1; r<2; r++){
+      fMediana.push_back(f0[l+r]);
     }
     sort(fMediana.begin(),fMediana.end());
-    f0[l]=fMediana[fMediana.size()/2];
-  }*/
-    for(unsigned int l = 0; l<f0.size();l++){
-      if(l<(f0.size()-fMedianaLen)){
-        for(unsigned int r = 0; r<fMedianaLen; r++){
-          fMediana[r]  = f0[l+r];
-        }
-      }
-      else{
-        fMediana[1] = f0[l];
-      }
-      sort(fMediana.begin(), fMediana.end());
-      f0[l] = fMediana[1];
-
-    }
+    f0_.push_back(fMediana[1]);//generalitzar l'1
+    fMediana.clear();
+  }
+   f0_.push_back(f0[f0.size()-1]);
   /*unsigned int l = 0;
   while(l<f0.size()){
     if(l<=(f0.size()-fMedianaLen)){
@@ -159,7 +155,7 @@ int main(int argc, const char *argv[]) {
   }
 
   os << 0 << '\n'; //pitch at t=0
-  for (iX = f0.begin(); iX != f0.end(); ++iX) 
+  for (iX = f0_.begin(); iX != f0_.end(); ++iX) 
     os << *iX << '\n';
   os << 0 << '\n';//pitch at t=Dur
 
