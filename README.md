@@ -2,7 +2,7 @@ PAV - P3: estimación de pitch
 =============================
 1.Introducción
 ----------------------------------------------
-El objectivo de esta práctica consiste en la estimación del pitch de ciertas señales de audio para determinar si una trama de voz es sonora o sorda. Nuestro sistema consta de un preprocesado de la señal, un procesado y un postprocesado. El preprocesado consiste en aplicar un center clipping a la señal de entrada  que producirá un doble efecto en la señal resultante de salida que puede ser muy útil, se introducirá una distorsión a la señal que hará que la intensidad de los armónicos de orden elevado aumente y eliminaremos ruido. También hemos utlitzado un diezmado en el preprocesado para mejorar las prestaciones de nuestro código.
+El objectivo de esta práctica consiste en la estimación del pitch de ciertas señales de audio para determinar si una trama de voz es sonora o sorda. Nuestro sistema consta de un preprocesado de la señal, un procesado y un postprocesado. El preprocesado consiste en aplicar un central-clipping a la señal de entrada  que producirá un doble efecto en la señal resultante de salida que puede ser muy útil, se introducirá una distorsión a la señal que hará que la intensidad de los armónicos de orden elevado aumente y eliminaremos ruido. También hemos utlitzado un diezmado en el preprocesado para mejorar las prestaciones de nuestro código.
 El procesado de la señal se basa en el cáclulo de la autocorrelación para estimar el pitch, en función de dos umbrales y la potencia determinamos si la señal es sonora o sorda. 
 Finalmente el postprocesado de la señal consiste en un filtro de mediana que nos corregirá algunos valores de pitch.
 
@@ -136,7 +136,7 @@ Optimice los parámetros de su sistema de estimación de pitch e inserte una tab
     
     ![imagen](https://user-images.githubusercontent.com/91128741/163667427-9714fd10-bd1f-47aa-96d3-d7b59dd126ab.png)
     
-    Como vemos hemos añadido tres parámetros que vamos a utlizar como umbrales. El -m umaxnorm es el umbral que nos decidirá si la autocorrelación de r[1]/r[0] es suficientemente grande para considerar la trama que estamos procesando como sonora. Los parámetros -p (llindarPos) y -n (llindarNeg) corresponden a los umbrales que vamos a utlitzar cuando realizemos el centerclipping. Finalmente el último umbral es el -u (llindarUnvoiced), este umbral nos indica si la autocorrelación de r[l]/r[0] es suficientemente mayor para poder determinar que la señal es períodica y por lo tanto sonora.
+    Como vemos hemos añadido tres parámetros que vamos a utlizar como umbrales. El -m umaxnorm es el umbral que nos decidirá si la autocorrelación de r[1]/r[0] es suficientemente grande para considerar la trama que estamos procesando como sonora. Los parámetros -p (llindarPos) y -n (llindarNeg) corresponden a los umbrales que vamos a utlitzar cuando realizemos el central-clipping. Finalmente el último umbral es el -u (llindarUnvoiced), este umbral nos indica si la autocorrelación de r[l]/r[0] es suficientemente mayor para poder determinar que la señal es períodica y por lo tanto sonora.
      
  
 * Implemente las técnicas que considere oportunas para optimizar las prestaciones del sistema de estimación
@@ -144,7 +144,8 @@ Optimice los parámetros de su sistema de estimación de pitch e inserte una tab
 
   Entre las posibles mejoras, puede escoger una o más de las siguientes:
 
-  * Técnicas de preprocesado: filtrado paso bajo, diezmado, *center clipping*, etc.
+  * Técnicas de preprocesado: filtrado paso bajo, diezmado, *
+  central-clipping*, etc.
   * Técnicas de postprocesado: filtro de mediana, *dynamic time warping*, etc.
   * Métodos alternativos a la autocorrelación: procesado cepstral, *average magnitude difference function*
     (AMDF), etc.
@@ -183,7 +184,7 @@ Execution Time: 0.000871
 
 Se observa que con el diezmando, el tiempo de ejecución ha disminuido practicamente una relación de 1/20.
 
-Otro método de preprocesado que hemos utilizado en la práctica y que comprobamos que mejora las prestaciones del sistema ha sido el centerclipping. Sin embargo, antes de realizar el centralclipping se ha normalizado la señal para mejorar las prestaciones, se ha hecho de la siguiente manera:
+Otro método de preprocesado que hemos utilizado en la práctica y que comprobamos que mejora las prestaciones del sistema ha sido el central-clipping. Sin embargo, antes de realizar el centralclipping se ha normalizado la señal para mejorar las prestaciones, se ha hecho de la siguiente manera:
 ```c++
   float max=0;
   for(unsigned int k=0; k<x.size();k++){
@@ -196,13 +197,13 @@ Otro método de preprocesado que hemos utilizado en la práctica y que comprobam
   }
   ```
 
-Como se ha explicado en la introducción el centerclipping es muy útil para este tipo de estimaciones. El centerclipping nos añade una distorsión a la señal que ayudará a la estimación del pitch de dos maneras distintas: 
+Como se ha explicado en la introducción el central-clipping es muy útil para este tipo de estimaciones. El central-clipping nos añade una distorsión a la señal que ayudará a la estimación del pitch de dos maneras distintas: 
 	
 * La primera, aumentará la intensidad de los armónicos de orden más elevado. Esto facilitará la detección de si una trama es sonora o no. 
 	
 * La segunda, nuestro sistema será más robusto respecto al ruido.
 
-Simplemente lo que hace el centerclipping es poner a 0 todos los valores que no superen un cierto umbral. Los que si superan el umbral se les restará ese mismo de manera que así se adaptará la señal. Se debe observar que los umbrales son los correspondientes a las variables llindarPos y llindarNeg. Se ha hecho de esta manera para que, a posteriori, se pueda buscar su valor óptimo mediante bucles for. 
+Simplemente lo que hace el central-clipping es poner a 0 todos los valores que no superen un cierto umbral. Los que si superan el umbral se les restará ese mismo de manera que así se adaptará la señal. Se debe observar que los umbrales son los correspondientes a las variables llindarPos y llindarNeg. Se ha hecho de esta manera para que, a posteriori, se pueda buscar su valor óptimo mediante bucles for. 
 ```c++
  for(unsigned int k=0; k<x.size();k++){
     if(x[k]>0){
@@ -221,16 +222,16 @@ Simplemente lo que hace el centerclipping es poner a 0 todos los valores que no 
 
 
 
-Para mostrar la diferencia entre una señal con centerclipping y una sin centerplipping extraemos del programa un .txt con las amplitudes de las dos señales.
+Para mostrar la diferencia entre una señal con central-clipping y una sin central-plipping extraemos del programa un .txt con las amplitudes de las dos señales.
 
 ![imagen](https://user-images.githubusercontent.com/91128741/163669294-74a15480-ab16-41a0-8f67-0af048f860b7.png)
 
 
-Se observa claramente que la primera señal es la original y la segunda es la misma señal pero con un centerclipping. En este caso, los umbrales tomaban el valor llindarPos=0.02 y llindarNeg=-0.02 También se ha comprobado que el preprocesado con centerclipping mejora las prestaciones:
+Se observa claramente que la primera señal es la original y la segunda es la misma señal pero con un central-clipping. En este caso, los umbrales tomaban el valor llindarPos=0.02 y llindarNeg=-0.02 También se ha comprobado que el preprocesado con central-clipping mejora las prestaciones:
 
 ![imagen](https://user-images.githubusercontent.com/91128741/163669387-45966418-2f0e-4fa1-aa29-6b2fe0c82f7b.png)
 
-La primera captura pertenece a la señal sin centerclipping y la segunda a la señal con centerclipping. Se ha mejorado considerablemente el resultado aplicando centerclipping.
+La primera captura pertenece a la señal sin central-clipping y la segunda a la señal con central-clipping. Se ha mejorado considerablemente el resultado aplicando central-clipping.
  
 Para mejorar el resultado también hemos utlitzado un postprocesado de la señal, concretamente un filtro de mediana. El filtro de mediana consiste aplicar la mediana entre estimaciones de pitch vecinas. En nuestro caso hemos creado un vector de tres muestras que llamaremos filtro de mediana. Se ha recorrido el vector f0, se ha aplicado la mediana y el resultado se ha guardado en el vector f0_.
 El código utlitzado es el siguiente:
@@ -257,23 +258,25 @@ Es importante este filtro porque nos corrige errores del procesado y nos mejora 
 
 La primera imagen corresponde a la evaluación de la señal sin el filtro de mediana y la segunda corresponde a la señal con filtro de mediana, se puede comprobar que mejoramos las prestaciones utlitzando el filtro de mediana.
 
-Por último mostramos como hemos optimizado los umbrales de manera que mejoren lo máximo posible las prestaciones. Para empezar hemos creado un fichero .sh que ejecutándolo entra en unos bucles que calculan para cada variable la mejor combinación entre las otras. El código utiltizado ha sido el siguiente:
+Por último mostramos como hemos optimizado los umbrales de manera que mejoren lo máximo posible las prestaciones. Para empezar hemos creado el fichero optimizacion.sh  que ejecutándolo mediante la orden *bash scripts/optimizacion.sh* entra en unos bucles que calculan para cada variable la mejor combinación entre las otras. El código utiltizado ha sido el siguiente:
 ```sh
 #!/bin/bash 
-for umaxnorm in $(seq 0.2 0.1 0.4);do
-    for llindarNeg in $(seq -0.02 0.01 0);do
-        for llindarPos in $(seq 0 0.01 0.02);do
-            for llindarUnvoiced in $(seq 0 0.001 0.003);do
-                echo -n "umaxnorm=$umaxnorm llindarNeg=$llindarNeg llindarPos=$llindarPos llindarUnvoiced=$llindarUnvoiced   "
-                scripts/run_get_pitch.sh $umaxnorm $llindarNeg $llindarPos $llindarUnvoiced > /dev/null
-                pitch_evaluate pitch_4k/train/*f0ref | fgrep TOTAL
-            done  
-        done
-
-    done 
-    
-done
+for llindarPot in $(seq -45 0.5 -40);do
+    for umaxnorm in $(seq 0.3 0.005 0.4);do
+        for llindarNeg in $(seq -0.04 0.005 0);do
+            for llindarPos in $(seq 0 0.005 0.04);do
+                for llindarUnvoiced in $(seq 0 0.0001 0.0015);do
+                    echo -n "umaxnorm=$umaxnorm llindarNeg=$llindarNeg llindarPos=$llindarPos llindarUnvoiced=$llindarUnvoiced llindarPot=$llindarPot  "
+                    scripts/run_get_pitch.sh $umaxnorm $llindarNeg $llindarPos $llindarUnvoiced $llindarPot > /dev/null
+                    pitch_evaluate pitch_4k/train/*f0ref | fgrep TOTAL
+                done  
+            done
+        done 
+    done
+done | sort -t: -k 2n;
+exit 0
 ```
+En el fichero run_get_pitch se han guardado los valores óptimos que hemos obtenido para que al ejecutar el get_pitch.cpp sin introducir por linea de comandos se apliquen por defecto.
 
 3.Conclusiones
 ----------------------------------------------
