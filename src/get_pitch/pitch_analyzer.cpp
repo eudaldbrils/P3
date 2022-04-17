@@ -41,6 +41,8 @@ namespace upc {
       for (unsigned int n=0; n<frameLen; n++){
         window[n] = 0.53836 - (0.46164*(cos((2*3.1416*n)/(frameLen-1))));
       }
+      //window.assign(frameLen, 1);
+
       break;
     case RECT:
     default:
@@ -64,7 +66,7 @@ namespace upc {
     /// \TODO Implement a rule to decide whether the sound is voiced or not.
     /// * You can use the standard features (pot, r1norm, rmaxnorm),
     ///   or compute and use other ones.
-    if((rmaxnorm>umaxnorm && r1norm>0.8) || pot>10){
+    if(rmaxnorm>umaxnorm && r1norm>llindarUnvoiced && pot>-43.5){
       return false;
     }
     return true;
@@ -101,29 +103,38 @@ namespace upc {
     unsigned int lag = iRMax - r.begin();
 
     float pot = 10 * log10(r[0]);
-
+    int cont = 0;
+  
     //You can print these (and other) features, look at them using wavesurfer
     //Based on that, implement a rule for unvoiced
     //change to #if 1 and compile
-#if 0
-    if (r[0] > 0.0F)
-      cout << pot << '\t' << r[1]/r[0] << '\t' << r[lag]/r[0] << endl;
-#endif
+      
+      /*FILE *foutput_r1 = fopen("r1.txt", "w+");
+      FILE *foutput_rl= fopen("rl.txt", "w+");
+      FILE *foutput_pot=fopen("pot.txt", "w+");
     
+      fprintf(foutput_r1, "%f \n",r[1]/r[0]);
+      fprintf(foutput_rl, "%f \n",r[lag]/r[0]);  
+      fprintf(foutput_pot,"%f \n",pot);
+      
+      fclose(foutput_r1);
+      fclose(foutput_rl);
+      fclose(foutput_pot);*/
+      
+       
+#if 1
+    if (r[0] > 0.0F)
+      cout << r[lag]/r[0]  << endl;
+#endif
     if (unvoiced(pot, r[1]/r[0], r[lag]/r[0])){
       return 0;
     }
     else{
-      /*FILE *foutput_x = fopen("resultats_x.txt", "w+");
-      FILE *foutput_r = fopen("resultats_r.txt", "w+");
-      for(unsigned int i =0; i<x.size(); i++){
-        fprintf(foutput_x, "%f \n",x[i]);
-        fprintf(foutput_r, "%f \n",r[i]);      
-      }
-      fclose(foutput_x);
-      fclose(foutput_r);
+   
+    
       
-      */return (float) samplingFreq/(float) lag;
+      return (float) samplingFreq/(float) lag;
     }
+    
   }
 }

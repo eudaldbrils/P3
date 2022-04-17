@@ -29,6 +29,7 @@ Options:
     -m FLOAT, --umaxnorm=FLOAT  umbral de la autocorrelación a largo plazo [default: 0.5]
     -p FLOAT, --llindarPos=FLOAT  umbral positivo central clipping [default: 0.01]
     -n FLOAT, --llindarNeg=FLOAT  umbral negativo central clipping [default: -0.01]
+    -u FLOAT, --llindarUnvoiced=FLOAT  umbral unvoiced [default: 0.05]
     -h, --help  Show this screen
     --version   Show the version of the project
 
@@ -53,9 +54,13 @@ int main(int argc, const char *argv[]) {
   float umaxnorm=stof(args["--umaxnorm"].asString());
   float llindarPos=stof(args["--llindarPos"].asString());
   float llindarNeg=stof(args["--llindarNeg"].asString());
+  float llindarUnvoiced=stof(args["--llindarUnvoiced"].asString());
 
   // Read input sound file
   unsigned int rate;
+  /*unsigned t0, t1;
+ 
+  t0=clock();*/
   vector<float> x;
   if (readwav_mono(input_wav, rate, x) != 0) {
     cerr << "Error reading input file " << input_wav << " (" << strerror(errno) << ")\n";
@@ -66,7 +71,7 @@ int main(int argc, const char *argv[]) {
   int n_shift = rate * FRAME_SHIFT;
 
   // Define analyzer
-  PitchAnalyzer analyzer(n_len, rate,umaxnorm, PitchAnalyzer::HAMMING, 50, 500);
+  PitchAnalyzer analyzer(n_len, rate,umaxnorm, llindarUnvoiced, PitchAnalyzer::HAMMING, 50, 500);
 
   ///Normalitzar el senyal
   float max=0;
@@ -82,7 +87,7 @@ int main(int argc, const char *argv[]) {
   /// \TODO
   /// Preprocess the input signal in order to ease pitch estimation. For instance,
   /// central-clipping or low pass filtering may be used.
-  for(unsigned int k=0; k<x.size();k++){
+ for(unsigned int k=0; k<x.size();k++){
     if(x[k]>0){
       x[k]=x[k]-llindarPos;
       if(x[k]<0){
@@ -95,6 +100,7 @@ int main(int argc, const char *argv[]) {
       }
     }
   }
+ 
   
   // Iterate for each frame and save values in f0 vector
   vector<float>::iterator iX;
@@ -121,7 +127,7 @@ int main(int argc, const char *argv[]) {
     fMediana.clear();
   }
    f0_.push_back(f0[f0.size()-1]);
-
+ 
   // Write f0 contour into the output file
   ofstream os(output_txt);
   if (!os.good()) {
@@ -134,25 +140,11 @@ int main(int argc, const char *argv[]) {
     os << *iX << '\n';
   os << 0 << '\n';//pitch at t=Dur
 
-  /*int n = 500;
-	std::vector<double> x(n), y(n), z(n);
-	for(int i=0; i<n; ++i) {
-		x.at(i) = i;
-		y.at(i) = sin(2*M_PI*i/360.0);
-		z.at(i) = 100.0 / i;
-	}
+  /*t1 = clock();
 
-  plt::suptitle("My plot");
-    plt::subplot(1, 2, 1);
-	plt::plot(x, y, "r-");
-    plt::subplot(1, 2, 2);
-    plt::plot(x, z, "k-");
-    // Add some text to the plot
-    plt::text(100, 90, "Hello!");
+  double time = (double(t1-t0)/CLOCKS_PER_SEC);
 
-
-	// Show plots
-	plt::show();*/
-
+  os<<"Execution Time: " << time << endl;
+  */
   return 0;
 }
