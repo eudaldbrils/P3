@@ -246,7 +246,7 @@ El código utlitzado es el siguiente:
       fMediana.push_back(f0[l+r]);
     }
     sort(fMediana.begin(),fMediana.end());
-    f0_.push_back(fMediana[1]);//generalitzar l'1
+    f0_.push_back(fMediana[1]);
     fMediana.clear();
   }
    f0_.push_back(f0[f0.size()-1]);
