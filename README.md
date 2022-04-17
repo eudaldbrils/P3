@@ -2,7 +2,7 @@ PAV - P3: estimación de pitch
 =============================
 1.Introducción
 ----------------------------------------------
-El objectivo de esta páctica consiste en la estimación del pitch de ciertas señales de áudio para determinar si una trama de voz es sonora o sorda. Nuestro sistema consta de un preprocesado de la señal, un procesado y un postprocesado. El preprocesado consiste en aplicar un center clipping a la señal de entrada que producirá un doble efecto en la señal reultante de salida que puede ser muy útil, se introducirá una distorsión a la señal que hará que la intensidad de los armónicos de orden elevado y eliminaremos ruido. También hemos utlitzado un diezmado en el preprocesado para mejorar las prestaciones de nuestro código.
+El objectivo de esta práctica consiste en la estimación del pitch de ciertas señales de audio para determinar si una trama de voz es sonora o sorda. Nuestro sistema consta de un preprocesado de la señal, un procesado y un postprocesado. El preprocesado consiste en aplicar un central-clipping a la señal de entrada  que producirá un doble efecto en la señal resultante de salida que puede ser muy útil, se introducirá una distorsión a la señal que hará que la intensidad de los armónicos de orden elevado aumente y eliminaremos ruido. También hemos utlitzado un diezmado en el preprocesado para mejorar las prestaciones de nuestro código.
 El procesado de la señal se basa en el cáclulo de la autocorrelación para estimar el pitch, en función de dos umbrales y la potencia determinamos si la señal es sonora o sorda. 
 Finalmente el postprocesado de la señal consiste en un filtro de mediana que nos corregirá algunos valores de pitch.
 
@@ -60,7 +60,8 @@ int cont=0;
 
 
 * Determine el mejor candidato para el periodo de pitch localizando el primer máximo secundario de la autocorrelación. Inserte a continuación el código correspondiente.
-Claramente se puede observar que el mejor candidato para el periodo de pitch es el puto donde se encuentra el segundo máximo de la autocorrelación, se puede ver que el pitch es de 1/0.0045s es decir de 222.22 Hz. 
+
+Claramente se puede observar que el mejor candidato para el periodo de pitch es el punto donde se encuentra el segundo máximo de la autocorrelación, se puede ver que el pitch es de 1/0.0045s es decir de 222.22 Hz. 
 El código implementado con matlab es el siguiente:
 
 ```
@@ -100,7 +101,7 @@ Lo que hacemos básicamente consiste en establecer 2 umbrales óptimos que nos p
     ![imagen](https://user-images.githubusercontent.com/91128741/163727276-3b4536be-6060-498e-b341-fd8edfd0215b.png)
 
    
-La primera imagen corresponde a la autocorrelación del màximo del segundo pico, la segunda imagen a la autocorrelación normalizada, la tercera a la potencia de la señal y la última es el pitch estimado. Como podemos ver, los principales candidatos para determinar la sonoridad la voz son capazes de clasificar correctamente el pitch. Vemos que cuando hay algun valle en cualquiera de los candidatos, no aparece ningun pitch, eso es bueno ya que significa que es una trama sorda y por lo tanto no debe haber ningun valor elevado ni en la potencia ni en la autocorrelación ni en la autocorrelación del máximo secundario. 
+La primera imagen corresponde a la autocorrelación en su máximo secundario, la segunda imagen a la autocorrelación normalizada de uno, la tercera a la potencia de la señal y la última es el pitch estimado. Como podemos ver, los principales candidatos para determinar la sonoridad la voz son capazes de clasificar correctamente el pitch. Vemos que cuando hay algun valle en cualquiera de los candidatos, no aparece ningun pitch, eso es bueno ya que significa que es una trama sorda y por lo tanto no debe haber ningun valor elevado ni en la potencia ni en la autocorrelación ni en la autocorrelación del máximo secundario. 
     
 
 Puede considerar, también, la conveniencia de usar la tasa de cruces por cero.
@@ -135,7 +136,7 @@ Optimice los parámetros de su sistema de estimación de pitch e inserte una tab
     
     ![imagen](https://user-images.githubusercontent.com/91128741/163667427-9714fd10-bd1f-47aa-96d3-d7b59dd126ab.png)
     
-    Como vemos hemos añadido tres parámetros que vamos a utlizar como umbrales. El -m umaxnorm es el umbral que nos decidirá si la autocorrelación de r[1]/r[0] es suficientemente grande para considerar la trama que estamos procesando como sonora. Los parámetros -p (llindarPos) y -n (llindarNeg) corresponden a los umbrales que vamos a utlitzar cuando realizemos el centerclipping. Finalmente el último umbral es el -u (llindarUnvoiced), este umbral nos indica si la autocorrelación de r[l]/r[0] es suficientemente mayor para poder determinar que la señal es períodica y por lo tanto sonora.
+    Como vemos hemos añadido tres parámetros que vamos a utlizar como umbrales. El -m umaxnorm es el umbral que nos decidirá si la autocorrelación de r[1]/r[0] es suficientemente grande para considerar la trama que estamos procesando como sonora. Los parámetros -p (llindarPos) y -n (llindarNeg) corresponden a los umbrales que vamos a utlitzar cuando realizemos el central-clipping. Finalmente el último umbral es el -u (llindarUnvoiced), este umbral nos indica si la autocorrelación de r[l]/r[0] es suficientemente mayor para poder determinar que la señal es períodica y por lo tanto sonora.
      
  
 * Implemente las técnicas que considere oportunas para optimizar las prestaciones del sistema de estimación
@@ -143,7 +144,8 @@ Optimice los parámetros de su sistema de estimación de pitch e inserte una tab
 
   Entre las posibles mejoras, puede escoger una o más de las siguientes:
 
-  * Técnicas de preprocesado: filtrado paso bajo, diezmado, *center clipping*, etc.
+  * Técnicas de preprocesado: filtrado paso bajo, diezmado, *
+  central-clipping*, etc.
   * Técnicas de postprocesado: filtro de mediana, *dynamic time warping*, etc.
   * Métodos alternativos a la autocorrelación: procesado cepstral, *average magnitude difference function*
     (AMDF), etc.
@@ -151,9 +153,9 @@ Optimice los parámetros de su sistema de estimación de pitch e inserte una tab
     gobiernan la decisión sonoro/sordo.
   * Cualquier otra técnica que se le pueda ocurrir o encuentre en la literatura.
 
-Empezaremos con las técnicas de preprocesado. Nosotros primeramente hemos decidido que sería buena idea diezmar la señal para disminuir el tiempo de computación del proceso de estimación del pitch de cada fichero .wav y seguidamente evaluar su resultado. El objectivo ha sido diminuir el número de muestras temporales de los ficheros .wav para que los cálculos hechos a partir de estos ficheros sean más rápidos. Así pues, el obejetivo ha sido disminuir la frecuencia de muestreo pasando de 20KHz de los ficheros originales a 4KHz de los ficheros delmados. 
-Para hacerlo, hemos utlitzado la herramienta SOX. Hemos creado una nueva carpeta anomenada pitchc_4k/train dentro de la cual se guardan los ficheros .wav delmados. Dentro de esa carpeta también se han copiado los ficheros .f0ref y también se guardaran los ficheros .f0 resultantes de la aplicación del algoritmo desenvolupado en get_pitch.cpp. Esta carpeta se encuentra dentro del directorio HOME/PAV/P3.
-Para aplicar el delmado se ha accedido al directorio HOME/PAV/P3/pitch_db/train, donde se han guardado los ficheros .wav con frecuencia de muestreo 20kHz. Mediante el siguiente bucle for y la herramienta SOX se ha modificado la frecuencia de muestreo de todos los ficheros .wav y el fichero resultante se ha guardado en pitch_4k/train.
+Empezaremos con las técnicas de preprocesado. Nosotros primeramente hemos decidido que sería buena idea diezmar la señal para disminuir el tiempo de computación del proceso de estimación del pitch de cada fichero .wav y seguidamente evaluar su resultado. El objectivo ha sido diminuir el número de muestras temporales de los ficheros .wav para que los cálculos hechos a partir de estos ficheros sean más rápidos. Así pues, el obejetivo ha sido disminuir la frecuencia de muestreo pasando de 20KHz de los ficheros originales a 4KHz de los ficheros diezmados. 
+Para hacerlo, hemos utlitzado la herramienta SOX. Hemos creado una nueva carpeta llamada pitchc_4k/train dentro de la cual se guardan los ficheros .wav diezmados. Dentro de esa carpeta también se han copiado los ficheros .f0ref y también se guardaran los ficheros .f0 resultantes de la aplicación del algoritmo desenvolupado en get_pitch.cpp. Esta carpeta se encuentra dentro del directorio HOME/PAV/P3.
+Para aplicar el diezmado se ha accedido al directorio HOME/PAV/P3/pitch_db/train, donde se han guardado los ficheros .wav con frecuencia de muestreo 20kHz. Mediante el siguiente bucle for y la herramienta SOX se ha modificado la frecuencia de muestreo de todos los ficheros .wav y el fichero resultante se ha guardado en pitch_4k/train.
 ````
 for fwav in *.wav; do 
     sox $fwav -r 4k ../../pitch_4k/train/$fwav
@@ -163,20 +165,16 @@ Si ahora se analizan los ficheros que se encuentran en pitch_db y los que se enc
 
 ![imagen](https://user-images.githubusercontent.com/91128741/163667999-de296793-7794-4f68-98ac-6ee46668e210.png)
 
-A continuación se muestra la velocidad de computación utlitizando la base de datos de los ficheros de 4kHz es superior a la de los ficheros de 20KHz. Para hacerlo, el fichero get_pitch.cpp se ha añadido la siguiente estructura:
+A continuación observa que la velocidad de computación utlitizando la base de datos de los ficheros de 4kHz es superior a la de los ficheros de 20KHz. Para hacerlo, el fichero get_pitch.cpp se ha añadido la siguiente estructura:
 ```c++
 unsigned t0, t1;
 t0=clock(); //añadido al principio
-// tot el codi
-t1 = clock(); //añadido al final una vez printeado l'estimación f0 a cada trama al fichero output.txt
-```
-```c++
-//en el main
+// todo el código
+t1 = clock(); //añadido al final una vez printeado l'estimación f0 de cada trama al fichero output.txt
 double time = (double(t1-t0)/CLOCKS_PER_SEC);
-//code
-os << "Execution Time: " << time << endl; //añadido al final del main justo antoes del return 0 por tal que la última línea de los ficheros .f0 indique el tiempo de ejecución del fichero get_picth.cpp
+os << "Execution Time: " << time << endl; //añadido al final del main justo antoes del return 0 para que la última línea de los ficheros .f0 indique el tiempo de ejecución del fichero get_picth.cpp
 ```
-Analizando el fichero rl1002.f0 del a base de datos de pitch_db se obtiene un tiempo de ejecución de:
+Analizando el fichero rl1002.f0 de la base de datos de pitch_db se obtiene un tiempo de ejecución de:
 
 Execution Time: 0.01697
 
@@ -186,7 +184,7 @@ Execution Time: 0.000871
 
 Se observa que con el diezmando, el tiempo de ejecución ha disminuido practicamente una relación de 1/20.
 
-Otro método de preprocesado que hemos utilizado en la práctica y que comprobamos que mejora las prestaciones del sistema ha sido el centerclipping. Antes de realizar el centralclipping se ha normalizado la señal para mejorar las prestaciones, se ha hecho de la siguiente manera:
+Otro método de preprocesado que hemos utilizado en la práctica y que comprobamos que mejora las prestaciones del sistema ha sido el central-clipping. Sin embargo, antes de realizar el centralclipping se ha normalizado la señal para mejorar las prestaciones, se ha hecho de la siguiente manera:
 ```c++
   float max=0;
   for(unsigned int k=0; k<x.size();k++){
@@ -197,18 +195,15 @@ Otro método de preprocesado que hemos utilizado en la práctica y que comprobam
   for(unsigned int k=0; k<x.size();k++){
     x[k]=x[k]/max;
   }
-´´´
+  ```
 
-
-
-
-Como se ha explicado en la introducción el centerclipping es muy útil para este tipo de estimaciones. El centerclipping nos añade una distorsión a la señal que ayudará a la estimación del pitch de dos maneras distintas: 
+Como se ha explicado en la introducción el central-clipping es muy útil para este tipo de estimaciones. El central-clipping nos añade una distorsión a la señal que ayudará a la estimación del pitch de dos maneras distintas: 
 	
-* La primera, aumentará la intensidad de los harmónicos de orden más elevado y será más fácil la detección de si una trama es sonora o no. 
+* La primera, aumentará la intensidad de los armónicos de orden más elevado. Esto facilitará la detección de si una trama es sonora o no. 
 	
 * La segunda, nuestro sistema será más robusto respecto al ruido.
 
-Simplemente lo que hace el centerclipping es poner a 0 todos los valores que no superen un cierto umbral, los que si superan el umbral se les restará ese mismo de manera que así se adaptará la señal. Se debe observar que nuestros umbrales son óptimos, por lo tanto los umbrales del centerclipping los decide el programa mismo y por defecto no són superiores a 0.01 y -0.01. A continuación se puede ver la parte código utilizada:
+Simplemente lo que hace el central-clipping es poner a 0 todos los valores que no superen un cierto umbral. Los que si superan el umbral se les restará ese mismo de manera que así se adaptará la señal. Se debe observar que los umbrales son los correspondientes a las variables llindarPos y llindarNeg. Se ha hecho de esta manera para que, a posteriori, se pueda buscar su valor óptimo mediante bucles for. 
 ```c++
  for(unsigned int k=0; k<x.size();k++){
     if(x[k]>0){
@@ -227,18 +222,18 @@ Simplemente lo que hace el centerclipping es poner a 0 todos los valores que no 
 
 
 
-Para mostrar la diferencia entre una señal con centerclipping y una sin centerplipping extremos del programa un .txt con las aplitudes de las dos señales. Voy a exagerar el centerclipping para poder ver más claramente como funciona el algorítmo.
+Para mostrar la diferencia entre una señal con central-clipping y una sin central-plipping extraemos del programa un .txt con las amplitudes de las dos señales.
 
 ![imagen](https://user-images.githubusercontent.com/91128741/163669294-74a15480-ab16-41a0-8f67-0af048f860b7.png)
 
 
-Se observa claramente que la primera señal es la original y la segunda es la misma señal pero con un centerclipping. En este caso he puesto los umbrales a 0.02 y a -0.02 para conseguir este clipping. También se ha comprobado que el preprocesado con centerclipping mejora las prestaciones:
+Se observa claramente que la primera señal es la original y la segunda es la misma señal pero con un central-clipping. En este caso, los umbrales tomaban el valor llindarPos=0.02 y llindarNeg=-0.02 También se ha comprobado que el preprocesado con central-clipping mejora las prestaciones:
 
 ![imagen](https://user-images.githubusercontent.com/91128741/163669387-45966418-2f0e-4fa1-aa29-6b2fe0c82f7b.png)
 
-La primera captura pertenece a la señal sin clipping y la segunda a la señal con clipping. Se ha mejorado considerablemente el resultado aplicando centerclipping.
+La primera captura pertenece a la señal sin central-clipping y la segunda a la señal con central-clipping. Se ha mejorado considerablemente el resultado aplicando central-clipping.
  
-Para mejorar el resultado también hemos utlitzado un postprocesado de la señal, concretamente un filtro de mediana. El filtro de mediana consiste en evaluar la amplitud de los pitch y comparar con sus vecinos. En nuestro caso hemos creado un vector de tres muestras que llamaremos filtro de mediana. Este filtro coge 3 pitch calulados, las ordena de menor a mayor y vamos rellenando otro vector con la muestra del centro del vector filtro de mediana.
+Para mejorar el resultado también hemos utlitzado un postprocesado de la señal, concretamente un filtro de mediana. El filtro de mediana consiste aplicar la mediana entre estimaciones de pitch vecinas. En nuestro caso hemos creado un vector de tres muestras que llamaremos filtro de mediana. Se ha recorrido el vector f0, se ha aplicado la mediana y el resultado se ha guardado en el vector f0_.
 El código utlitzado es el siguiente:
 ```c++
   vector<float> fMediana;
@@ -255,7 +250,7 @@ El código utlitzado es el siguiente:
     fMediana.clear();
   }
    f0_.push_back(f0[f0.size()-1]);
-```
+   ```
 
 Es importante este filtro porque nos corrige errores del procesado y nos mejora las prestaciones.
 
@@ -263,26 +258,29 @@ Es importante este filtro porque nos corrige errores del procesado y nos mejora 
 
 La primera imagen corresponde a la evaluación de la señal sin el filtro de mediana y la segunda corresponde a la señal con filtro de mediana, se puede comprobar que mejoramos las prestaciones utlitzando el filtro de mediana.
 
-Por último mostramos como hemos optimizado los umbrales de manera que mejoren lo máximo posible las prestaciones. Para empezar hemos creado un fichero .sh que ejecutándolo entra en unos bucles que calculan para cada variable la mejor combinación entre las otras. El código utiltizado ha sido el siguiente:
+Por último mostramos como hemos optimizado los umbrales de manera que mejoren lo máximo posible las prestaciones. Para empezar hemos creado el fichero optimizacion.sh  que ejecutándolo mediante la orden *bash scripts/optimizacion.sh* entra en unos bucles que calculan para cada variable la mejor combinación entre las otras. El código utiltizado ha sido el siguiente:
 ```sh
 #!/bin/bash 
-for umaxnorm in $(seq 0.2 0.1 0.4);do
-    for llindarNeg in $(seq -0.02 0.01 0);do
-        for llindarPos in $(seq 0 0.01 0.02);do
-            for llindarUnvoiced in $(seq 0 0.001 0.003);do
-                echo -n "umaxnorm=$umaxnorm llindarNeg=$llindarNeg llindarPos=$llindarPos llindarUnvoiced=$llindarUnvoiced   "
-                scripts/run_get_pitch.sh $umaxnorm $llindarNeg $llindarPos $llindarUnvoiced > /dev/null
-                pitch_evaluate pitch_4k/train/*f0ref | fgrep TOTAL
-            done  
-        done
-
-    done 
-    
-done
+for llindarPot in $(seq -45 0.5 -40);do
+    for umaxnorm in $(seq 0.3 0.005 0.4);do
+        for llindarNeg in $(seq -0.04 0.005 0);do
+            for llindarPos in $(seq 0 0.005 0.04);do
+                for llindarUnvoiced in $(seq 0 0.0001 0.0015);do
+                    echo -n "umaxnorm=$umaxnorm llindarNeg=$llindarNeg llindarPos=$llindarPos llindarUnvoiced=$llindarUnvoiced llindarPot=$llindarPot  "
+                    scripts/run_get_pitch.sh $umaxnorm $llindarNeg $llindarPos $llindarUnvoiced $llindarPot > /dev/null
+                    pitch_evaluate pitch_4k/train/*f0ref | fgrep TOTAL
+                done  
+            done
+        done 
+    done
+done | sort -t: -k 2n;
+exit 0
 ```
+En el fichero run_get_pitch se han guardado los valores óptimos que hemos obtenido para que al ejecutar el get_pitch.cpp sin introducir por linea de comandos se apliquen por defecto.
 
-
- 
+3.Conclusiones
+----------------------------------------------
+ La realización de la práctica ha terminado con la elaboración de un algorítmo que es capaz de estimar la frecuencia de pitch de las tramas sonoras con un F-SCORE superior al 90%. Para lograrlo se han puesto en práctica diversas técnicas y se han dejado aquellas que han dado mejor resultado. Seguramente haya muchas más técnicas y métodos que se le podrían aplicar a nuestro algoritmo para mejorar su eficacia. Sin embargo, supone un logro por nuestra parte el hecho de visualizar que sabemos poner a la práctica muchas de las técnicas que se nos explican a la teoría. Además, esta práctica nos ha servido para tener un primer contacto con c++ lo cual era otro reto al que nos hemos tenido que afrontar para completar el algorítmo.
 
 
 
