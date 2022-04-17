@@ -275,8 +275,9 @@ for umaxnorm in $(seq 0.2 0.1 0.4);do
 done
 ```
 
-
- 
+3.Conclusiones
+----------------------------------------------
+ La realización de la práctica ha terminado con la elaboración de un algorítmo que es capaz de estimar la frecuencia de pitch de las tramas sonoras con un F-SCORE superior al 90%. Para lograrlo se han puesto en práctica diversas técnicas y se han dejado aquellas que han dado mejor resultado. Seguramente haya muchas más técnicas y métodos que se le podrían aplicar a nuestro algoritmo para mejorar su eficacia. Sin embargo, supone un logro por nuestra parte el hecho de visualizar que sabemos poner a la práctica muchas de las técnicas que se nos explican a la teoría. Además, esta práctica nos ha servido para tener un primer contacto con c++ lo cual era otro reto al que nos hemos tenido que afrontar para completar el algorítmo.
 
 
 
