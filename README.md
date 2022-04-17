@@ -97,23 +97,28 @@ Lo que hacemos básicamente consiste en establecer 2 umbrales óptimos que nos p
     Utilice el programa wavesurfer para analizar las condiciones apropiadas para determinar si un segmento es sonoro o sordo.
     Inserte una gráfica con la estimación de pitch incorporada a wavesurfer y, junto a ella, los principales candidatos para determinar la sonoridad de la voz: el nivel de potencia de la señal (r[0]), la autocorrelación normalizada de uno (r1norm = r[1] / r[0]) y el valor de la autocorrelación en su máximo secundario (rmaxnorm = r[lag] / r[0]).
     
-    ![imagen](https://user-images.githubusercontent.com/91128741/163722546-408268e8-b62d-49a8-8eb7-583cbb477b0f.png)
+    ![imagen](https://user-images.githubusercontent.com/91128741/163727276-3b4536be-6060-498e-b341-fd8edfd0215b.png)
 
-    Como podemos ver, los principales candidatos para determinar la sonoridad la voz son capazes de clasificar correctamente el pitch. Vemos que cuando hay algun valle en cualquiera de los candidatos, no aparece ningun pitch, eso es bueno ya que significa que es una trama sorda y por lo tanto no debe haber ningun valor elevado ni en la potencia ni en la autocorrelación ni en la autocorrelación del máximo secundario.
+   
+La primera imagen corresponde a la autocorrelación del màximo del segundo pico, la segunda imagen a la autocorrelación normalizada, la tercera a la potencia de la señal y la última es el pitch estimado. Como podemos ver, los principales candidatos para determinar la sonoridad la voz son capazes de clasificar correctamente el pitch. Vemos que cuando hay algun valle en cualquiera de los candidatos, no aparece ningun pitch, eso es bueno ya que significa que es una trama sorda y por lo tanto no debe haber ningun valor elevado ni en la potencia ni en la autocorrelación ni en la autocorrelación del máximo secundario. 
     
 
 Puede considerar, también, la conveniencia de usar la tasa de cruces por cero.
 
-
-    Recuerde configurar los paneles de datos para que el desplazamiento de ventana sea el adecuado, que en esta práctica es de 15 ms.
-    
-    Use el estimador de pitch implementado en el programa wavesurfer en una señal de prueba y compare su resultado con el obtenido por la mejor versión de su propio sistema. Inserte una gráfica ilustrativa del resultado de ambos estimadores
-    ![imagen](https://user-images.githubusercontent.com/91128741/163722933-900997ee-2966-45e1-b164-178cdc5f32cc.png)
+Recuerde configurar los paneles de datos para que el desplazamiento de ventana sea el adecuado, que en esta práctica es de 15 ms.
+Use el estimador de pitch implementado en el programa wavesurfer en una señal de prueba y compare su resultado con el obtenido por la mejor versión de su propio sistema. 
+Inserte una gráfica ilustrativa del resultado de ambos estimadores
+   
+  
+  
+![imagen](https://user-images.githubusercontent.com/91128741/163722933-900997ee-2966-45e1-b164-178cdc5f32cc.png)
 
 Se puede observar que el estimador de pitch de nuestro programa (la captura de arriba) es muy similar al pitch estimado por el progrma (la caputra de abajo).     
     Aunque puede usar el propio Wavesurfer para obtener la representación, se valorará el uso de alternativas de mayor calidad (particularmente Python).
     
-    Optimice los parámetros de su sistema de estimación de pitch e inserte una tabla con las tasas de error y el score TOTAL proporcionados por pitch_evaluate en la evaluación de la base de datos pitch_db/train..
+Optimice los parámetros de su sistema de estimación de pitch e inserte una tabla con las tasas de error y el score TOTAL proporcionados por pitch_evaluate en la evaluación de la base de datos pitch_db/train..
+    
+    
 
 3.Ampliación
 ----------------------------------------------
@@ -181,7 +186,23 @@ Execution Time: 0.000871
 
 Se observa que con el diezmando, el tiempo de ejecución ha disminuido practicamente una relación de 1/20.
 
-Otro método de preprocesado que hemos utilizado en la práctica y que comprobamos que mejora las prestaciones del sistema ha sido el centerclipping. Como se ha explicado en la introducción el centerclipping es muy útil para este tipo de estimaciones. El centerclipping nos añade una distorsión a la señal que ayudará a la estimación del pitch de dos maneras distintas: 
+Otro método de preprocesado que hemos utilizado en la práctica y que comprobamos que mejora las prestaciones del sistema ha sido el centerclipping. Antes de realizar el centralclipping se ha normalizado la señal para mejorar las prestaciones, se ha hecho de la siguiente manera:
+```c++
+  float max=0;
+  for(unsigned int k=0; k<x.size();k++){
+    if(abs(x[k])>max){
+      max=x[k];
+    }
+  }
+  for(unsigned int k=0; k<x.size();k++){
+    x[k]=x[k]/max;
+  }
+´´´
+
+
+
+
+Como se ha explicado en la introducción el centerclipping es muy útil para este tipo de estimaciones. El centerclipping nos añade una distorsión a la señal que ayudará a la estimación del pitch de dos maneras distintas: 
 	
 * La primera, aumentará la intensidad de los harmónicos de orden más elevado y será más fácil la detección de si una trama es sonora o no. 
 	
@@ -244,6 +265,7 @@ La primera imagen corresponde a la evaluación de la señal sin el filtro de med
 
 Por último mostramos como hemos optimizado los umbrales de manera que mejoren lo máximo posible las prestaciones. Para empezar hemos creado un fichero .sh que ejecutándolo entra en unos bucles que calculan para cada variable la mejor combinación entre las otras. El código utiltizado ha sido el siguiente:
 ```sh
+#!/bin/bash 
 for umaxnorm in $(seq 0.2 0.1 0.4);do
     for llindarNeg in $(seq -0.02 0.01 0);do
         for llindarPos in $(seq 0 0.01 0.02);do
