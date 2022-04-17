@@ -97,12 +97,20 @@ Lo que hacemos básicamente consiste en establecer 2 umbrales óptimos que nos p
     Utilice el programa wavesurfer para analizar las condiciones apropiadas para determinar si un segmento es sonoro o sordo.
     Inserte una gráfica con la estimación de pitch incorporada a wavesurfer y, junto a ella, los principales candidatos para determinar la sonoridad de la voz: el nivel de potencia de la señal (r[0]), la autocorrelación normalizada de uno (r1norm = r[1] / r[0]) y el valor de la autocorrelación en su máximo secundario (rmaxnorm = r[lag] / r[0]).
     
-    Puede considerar, también, la conveniencia de usar la tasa de cruces por cero.
+    ![imagen](https://user-images.githubusercontent.com/91128741/163722546-408268e8-b62d-49a8-8eb7-583cbb477b0f.png)
+
+    Como podemos ver, los principales candidatos para determinar la sonoridad la voz son capazes de clasificar correctamente el pitch. Vemos que cuando hay algun valle en cualquiera de los candidatos, no aparece ningun pitch, eso es bueno ya que significa que es una trama sorda y por lo tanto no debe haber ningun valor elevado ni en la potencia ni en la autocorrelación ni en la autocorrelación del máximo secundario.
     
+
+Puede considerar, también, la conveniencia de usar la tasa de cruces por cero.
+
+
     Recuerde configurar los paneles de datos para que el desplazamiento de ventana sea el adecuado, que en esta práctica es de 15 ms.
     
     Use el estimador de pitch implementado en el programa wavesurfer en una señal de prueba y compare su resultado con el obtenido por la mejor versión de su propio sistema. Inserte una gráfica ilustrativa del resultado de ambos estimadores
-    
+    ![imagen](https://user-images.githubusercontent.com/91128741/163722933-900997ee-2966-45e1-b164-178cdc5f32cc.png)
+
+Se puede observar que el estimador de pitch de nuestro programa (la captura de arriba) es muy similar al pitch estimado por el progrma (la caputra de abajo).     
     Aunque puede usar el propio Wavesurfer para obtener la representación, se valorará el uso de alternativas de mayor calidad (particularmente Python).
     
     Optimice los parámetros de su sistema de estimación de pitch e inserte una tabla con las tasas de error y el score TOTAL proporcionados por pitch_evaluate en la evaluación de la base de datos pitch_db/train..
