@@ -38,10 +38,12 @@ namespace upc {
     switch (win_type) {
     case HAMMING:
       /// \TODO Implement the Hamming window
+      /**
+      \DONE Hamming window implemented
+      */
       for (unsigned int n=0; n<frameLen; n++){
         window[n] = 0.53836 - (0.46164*(cos((2*3.1416*n)/(frameLen-1))));
       }
-      //window.assign(frameLen, 1);
 
       break;
     case RECT:
@@ -66,7 +68,10 @@ namespace upc {
     /// \TODO Implement a rule to decide whether the sound is voiced or not.
     /// * You can use the standard features (pot, r1norm, rmaxnorm),
     ///   or compute and use other ones.
-    if(rmaxnorm>umaxnorm && r1norm>llindarUnvoiced && pot>-43.5){
+    /**
+    \DONE rule implemented. Optimal thersholds will be found executing "optimizacion.sh"
+    */
+    if(rmaxnorm>umaxnorm && r1norm>llindarUnvoiced && pot>llindarPot){
       return false;
     }
     return true;
@@ -94,7 +99,9 @@ namespace upc {
 	///    - The lag corresponding to the maximum value of the pitch.
     ///	   .
 	/// In either case, the lag should not exceed that of the minimum value of the pitch.
-
+  /**
+  \DONE rule implemented
+  */
     for (iR=iRMax=r.begin()+npitch_min;iR<r.begin()+npitch_max;iR++){
       if(*iR>*iRMax){
         iRMax=iR;
@@ -103,25 +110,11 @@ namespace upc {
     unsigned int lag = iRMax - r.begin();
 
     float pot = 10 * log10(r[0]);
-    int cont = 0;
   
     //You can print these (and other) features, look at them using wavesurfer
     //Based on that, implement a rule for unvoiced
     //change to #if 1 and compile
       
-      /*FILE *foutput_r1 = fopen("r1.txt", "w+");
-      FILE *foutput_rl= fopen("rl.txt", "w+");
-      FILE *foutput_pot=fopen("pot.txt", "w+");
-    
-      fprintf(foutput_r1, "%f \n",r[1]/r[0]);
-      fprintf(foutput_rl, "%f \n",r[lag]/r[0]);  
-      fprintf(foutput_pot,"%f \n",pot);
-      
-      fclose(foutput_r1);
-      fclose(foutput_rl);
-      fclose(foutput_pot);*/
-      
-       
 #if 1
     if (r[0] > 0.0F)
       cout << r[lag]/r[0]  << endl;
@@ -130,9 +123,12 @@ namespace upc {
       return 0;
     }
     else{
-   
-    
-      
+      //Implemented to print voiced frames
+      /*FILEfoutput_x = fopen("resultats_x.txt", "w+");
+      for(unsigned int i =0; i<x.size(); i++){
+        fprintf(foutput_x, "%f",x[i]);
+      }
+      fclose(foutput_x);*/
       return (float) samplingFreq/(float) lag;
     }
     

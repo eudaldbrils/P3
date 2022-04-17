@@ -4,7 +4,6 @@
 #include <fstream>
 #include <string.h>
 #include <errno.h>
-//#include <matplotlib.h>
 
 #include "wavfile_mono.h"
 #include "pitch_analyzer.h"
@@ -30,6 +29,7 @@ Options:
     -p FLOAT, --llindarPos=FLOAT  umbral positivo central clipping [default: 0.01]
     -n FLOAT, --llindarNeg=FLOAT  umbral negativo central clipping [default: -0.01]
     -u FLOAT, --llindarUnvoiced=FLOAT  umbral unvoiced [default: 0.05]
+    -w FLOAT, --llindarPot=FLOAT  umbral potencia [default: -43.5]
     -h, --help  Show this screen
     --version   Show the version of the project
 
@@ -44,6 +44,9 @@ int main(int argc, const char *argv[]) {
 	/// \TODO 
 	///  Modify the program syntax and the call to **docopt()** in order to
 	///  add options and arguments to the program.
+  /**
+   \DONE Now, the user can define the options and arguments from the shell
+  */
     std::map<std::string, docopt::value> args = docopt::docopt(USAGE,
         {argv + 1, argv + argc},	// array of arguments, without the program name
         true,    // show help if requested
@@ -55,6 +58,8 @@ int main(int argc, const char *argv[]) {
   float llindarPos=stof(args["--llindarPos"].asString());
   float llindarNeg=stof(args["--llindarNeg"].asString());
   float llindarUnvoiced=stof(args["--llindarUnvoiced"].asString());
+  float llindarPot=stof(args["--llindarPot"].asString());
+
 
   // Read input sound file
   unsigned int rate;
@@ -71,7 +76,7 @@ int main(int argc, const char *argv[]) {
   int n_shift = rate * FRAME_SHIFT;
 
   // Define analyzer
-  PitchAnalyzer analyzer(n_len, rate,umaxnorm, llindarUnvoiced, PitchAnalyzer::HAMMING, 50, 500);
+  PitchAnalyzer analyzer(n_len, rate,umaxnorm, llindarUnvoiced, llindarPot, PitchAnalyzer::HAMMING, 50, 500);
 
   ///Normalitzar el senyal
   float max=0;
@@ -87,6 +92,9 @@ int main(int argc, const char *argv[]) {
   /// \TODO
   /// Preprocess the input signal in order to ease pitch estimation. For instance,
   /// central-clipping or low pass filtering may be used.
+  /**
+   \DONE central-clipping implemented
+  */
  for(unsigned int k=0; k<x.size();k++){
     if(x[k]>0){
       x[k]=x[k]-llindarPos;
@@ -113,9 +121,11 @@ int main(int argc, const char *argv[]) {
   /// \TODO
   /// Postprocess the estimation in order to supress errors. For instance, a median filter
   /// or time-warping may be used.
+  /**
+  \DONE median filter implemented
+  */
   vector<float> fMediana;
   vector<float> f0_;
-  int fMedianaLen=3;
   f0_.push_back(f0[0]);
   for (unsigned int l=1; l<f0.size()-1; l++){
 
@@ -123,7 +133,7 @@ int main(int argc, const char *argv[]) {
       fMediana.push_back(f0[l+r]);
     }
     sort(fMediana.begin(),fMediana.end());
-    f0_.push_back(fMediana[1]);//generalitzar l'1
+    f0_.push_back(fMediana[1]);
     fMediana.clear();
   }
    f0_.push_back(f0[f0.size()-1]);

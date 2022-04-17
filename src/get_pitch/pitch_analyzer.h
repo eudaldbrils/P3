@@ -33,6 +33,7 @@ namespace upc {
       npitch_max; ///< maximum value of pitch period, in samples
     float umaxnorm;
     float llindarUnvoiced;
+    float llindarPot;
     
 	///
 	/// Computes correlation from lag=0 to r.size()
@@ -55,6 +56,7 @@ namespace upc {
 					unsigned int sFreq,			///< Sampling rate in Hertzs
           float umaxnorm_,
           float llindarUnvoiced_,
+          float llindarPot_,
 					Window w=PitchAnalyzer::HAMMING,	///< Window type
 					float min_F0 = MIN_F0,		///< Pitch range should be restricted to be above this value
 					float max_F0 = MAX_F0	///< Pitch range should be restricted to be below this value
@@ -65,6 +67,7 @@ namespace upc {
       samplingFreq = sFreq;
       umaxnorm=umaxnorm_;
       llindarUnvoiced=llindarUnvoiced_;
+      llindarPot=llindarPot_;
       set_f0_range(min_F0, max_F0);
       set_window(w);
     }
