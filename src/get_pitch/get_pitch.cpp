@@ -55,6 +55,9 @@ int main(int argc, const char *argv[]) {
   float llindarNeg=stof(args["--llindarNeg"].asString());
   // Read input sound file
   unsigned int rate;
+  /*unsigned t0, t1;
+ 
+  t0=clock();*/
   vector<float> x;
   if (readwav_mono(input_wav, rate, x) != 0) {
     cerr << "Error reading input file " << input_wav << " (" << strerror(errno) << ")\n";
@@ -130,29 +133,14 @@ int main(int argc, const char *argv[]) {
   }
 
   os << 0 << '\n'; //pitch at t=0
-  for (iX = f0.begin(); iX != f0.end(); ++iX) 
+  for (iX = f0_.begin(); iX != f0_.end(); ++iX) 
     os << *iX << '\n';
   os << 0 << '\n';//pitch at t=Dur
+  /*t1 = clock();
 
-  /*int n = 500;
-	std::vector<double> x(n), y(n), z(n);
-	for(int i=0; i<n; ++i) {
-		x.at(i) = i;
-		y.at(i) = sin(2*M_PI*i/360.0);
-		z.at(i) = 100.0 / i;
-	}
+  double time = (double(t1-t0)/CLOCKS_PER_SEC);
 
-  plt::suptitle("My plot");
-    plt::subplot(1, 2, 1);
-	plt::plot(x, y, "r-");
-    plt::subplot(1, 2, 2);
-    plt::plot(x, z, "k-");
-    // Add some text to the plot
-    plt::text(100, 90, "Hello!");
-
-
-	// Show plots
-	plt::show();*/
+  os<<"Execution Time: " << time << endl;*/
 
   return 0;
 }
