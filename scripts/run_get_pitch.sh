@@ -11,22 +11,22 @@ llindarPot=$5
 
 if [ -z "$umaxnorm" ]
 then
-    umaxnorm=0.4
+    umaxnorm=0.36
 fi
 
 if [ -z "$llindarPos" ]
 then
-    llindarPos=0.01
+    llindarPos=0.014
 fi
 
 if [ -z "$llindarNeg" ]
 then
-    llindarNeg=-0.01
+    llindarNeg=-0.014
 fi
 
 if [ -z "$llindarUnvoiced" ]
 then 
-    llindarUnvoiced=0.05
+    llindarUnvoiced=0.001
 fi
 
 if [ -z "$llindarPot" ]
